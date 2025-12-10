@@ -52,4 +52,3 @@ export const getChartColor = (index: number): string => {
 export const getChartColorRGB = (index: number): string => {
   return CHART_COLORS_RGB[index % CHART_COLORS_RGB.length]
 }
-

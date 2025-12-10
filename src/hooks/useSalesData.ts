@@ -71,4 +71,3 @@ export function useSalesGrouped() {
     queryFn: () => salesService.getSalesGrouped(dateRange, timeFrame),
   })
 }
-

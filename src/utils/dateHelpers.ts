@@ -147,4 +147,3 @@ export const formatRelativeTime = (date: Date | string): string => {
   if (diffDays < 7) return `${diffDays}d ago`
   return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
-

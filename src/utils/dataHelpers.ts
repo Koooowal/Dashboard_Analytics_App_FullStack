@@ -132,4 +132,3 @@ export function interpolateColor(
   }
   return colors[2]
 }
-

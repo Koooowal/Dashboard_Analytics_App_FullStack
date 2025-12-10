@@ -181,4 +181,3 @@ export const salesService = {
     return CATEGORIES
   },
 }
-

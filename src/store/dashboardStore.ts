@@ -47,4 +47,3 @@ export const useDashboardStore = create<DashboardState>((set) => ({
 
   setRefreshInterval: (refreshInterval) => set({ refreshInterval }),
 }))
-

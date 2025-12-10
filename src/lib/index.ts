@@ -1,2 +1,1 @@
 export { queryClient } from './queryClient'
-

@@ -59,4 +59,3 @@ export function usePerformanceTrends(userId: string, days = 30) {
     enabled: !!userId,
   })
 }
-

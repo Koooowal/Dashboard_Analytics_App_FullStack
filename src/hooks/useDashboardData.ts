@@ -52,4 +52,3 @@ export function useTopProducts(limit = 5) {
     queryFn: () => dashboardService.getTopProducts(limit),
   })
 }
-
