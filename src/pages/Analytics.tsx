@@ -39,7 +39,7 @@ export function Analytics() {
         subtitle="Detailed analytics and insights for your business."
       />
 
-      <FilterBar showSearch showCategories />
+      <FilterBar showSearch={false} showCategories />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <ChartCard

@@ -20,22 +20,57 @@ import {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export const dashboardService = {
-  async getStats(): Promise<DashboardStats> {
+  async getStats(
+    dateRange?: DateRange,
+    categories?: string[]
+  ): Promise<DashboardStats> {
     await delay(300)
-    return generateDashboardStats()
+    const stats = generateDashboardStats()
+
+    if (categories && categories.length > 0) {
+      const categoryMultiplier = categories.length / 6
+      return {
+        ...stats,
+        totalRevenue: Math.round(stats.totalRevenue * categoryMultiplier),
+        totalOrders: Math.round(stats.totalOrders * categoryMultiplier),
+      }
+    }
+
+    return stats
   },
 
   async getRevenueData(
     dateRange: DateRange,
-    timeFrame: TimeFrame
+    timeFrame: TimeFrame,
+    categories?: string[]
   ): Promise<RevenueDataPoint[]> {
     await delay(400)
-    return generateRevenueData(dateRange, timeFrame)
+    const data = generateRevenueData(dateRange, timeFrame)
+
+    if (categories && categories.length > 0 && categories.length < 6) {
+      const multiplier = categories.length / 6
+      return data.map((d) => ({
+        ...d,
+        revenue: Math.round(d.revenue * multiplier),
+        orders: Math.round(d.orders * multiplier),
+      }))
+    }
+
+    return data
   },
 
-  async getCategorySales(): Promise<CategorySales[]> {
+  async getCategorySales(
+    dateRange?: DateRange,
+    categories?: string[]
+  ): Promise<CategorySales[]> {
     await delay(350)
-    return generateCategorySales()
+    const allCategories = generateCategorySales()
+
+    if (categories && categories.length > 0) {
+      return allCategories.filter((cat) => categories.includes(cat.category))
+    }
+
+    return allCategories
   },
 
   async getUsers(): Promise<UserData[]> {
@@ -56,8 +91,18 @@ export const dashboardService = {
     return generateActivity(limit)
   },
 
-  async getTopProducts(limit = 5): Promise<TopProduct[]> {
+  async getTopProducts(
+    limit = 5,
+    dateRange?: DateRange,
+    categories?: string[]
+  ): Promise<TopProduct[]> {
     await delay(300)
-    return generateTopProducts(limit)
+    let products = generateTopProducts(20)
+
+    if (categories && categories.length > 0) {
+      products = products.filter((p) => categories.includes(p.category))
+    }
+
+    return products.slice(0, limit)
   },
 }

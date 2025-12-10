@@ -3,25 +3,30 @@ import { dashboardService } from '@/services'
 import { useFilterStore } from '@/store'
 
 export function useDashboardStats() {
+  const { dateRange, categories } = useFilterStore()
+
   return useQuery({
-    queryKey: ['dashboardStats'],
-    queryFn: () => dashboardService.getStats(),
+    queryKey: ['dashboardStats', dateRange, categories],
+    queryFn: () => dashboardService.getStats(dateRange, categories),
   })
 }
 
 export function useRevenueData() {
-  const { dateRange, timeFrame } = useFilterStore()
+  const { dateRange, timeFrame, categories } = useFilterStore()
 
   return useQuery({
-    queryKey: ['revenueData', dateRange, timeFrame],
-    queryFn: () => dashboardService.getRevenueData(dateRange, timeFrame),
+    queryKey: ['revenueData', dateRange, timeFrame, categories],
+    queryFn: () =>
+      dashboardService.getRevenueData(dateRange, timeFrame, categories),
   })
 }
 
 export function useCategorySales() {
+  const { dateRange, categories } = useFilterStore()
+
   return useQuery({
-    queryKey: ['categorySales'],
-    queryFn: () => dashboardService.getCategorySales(),
+    queryKey: ['categorySales', dateRange, categories],
+    queryFn: () => dashboardService.getCategorySales(dateRange, categories),
   })
 }
 
@@ -47,8 +52,11 @@ export function useActivity(limit = 10) {
 }
 
 export function useTopProducts(limit = 5) {
+  const { dateRange, categories } = useFilterStore()
+
   return useQuery({
-    queryKey: ['topProducts', limit],
-    queryFn: () => dashboardService.getTopProducts(limit),
+    queryKey: ['topProducts', limit, dateRange, categories],
+    queryFn: () =>
+      dashboardService.getTopProducts(limit, dateRange, categories),
   })
 }

@@ -30,15 +30,13 @@ export function ChartCard({
     <div
       className={`rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-md)] ${className}`}
     >
-      <div className="flex items-center justify-between border-b border-[var(--border-color)] px-5 py-4">
+      <div className="flex items-center justify-between border-b border-[var(--border-color)] px-6 py-5">
         <div>
           <h3 className="text-base font-semibold text-[var(--text-primary)]">
             {title}
           </h3>
           {subtitle && (
-            <p className="mt-0.5 text-sm text-[var(--text-muted)]">
-              {subtitle}
-            </p>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">{subtitle}</p>
           )}
         </div>
         <div className="flex items-center gap-1">
@@ -77,7 +75,7 @@ export function ChartCard({
         </div>
       </div>
 
-      <div className="p-5">
+      <div className="p-6">
         {error ? (
           <div className="flex h-64 flex-col items-center justify-center text-center">
             <p className="text-sm text-[var(--color-danger)]">{error}</p>

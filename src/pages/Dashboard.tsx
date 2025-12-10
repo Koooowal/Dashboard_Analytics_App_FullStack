@@ -1,26 +1,27 @@
-import {
-  TrendingUp,
-  TrendingDown,
-  Users,
-  DollarSign,
-  ShoppingCart,
-  Activity,
-} from 'lucide-react'
+import { DollarSign, ShoppingCart, Users, Activity } from 'lucide-react'
 import {
   ChartCard,
   InteractiveAreaChart,
   InteractivePieChart,
   InteractiveBarChart,
 } from '@/components/charts'
-import { DashboardHeader, FilterBar } from '@/components/dashboard'
+import {
+  DashboardHeader,
+  FilterBar,
+  MetricCard,
+  TopProductsTable,
+  TopPerformers,
+} from '@/components/dashboard'
 import {
   useDashboardStats,
   useRevenueData,
   useCategorySales,
   useActivity,
   useFilterSync,
+  useTopProducts,
+  useTopPerformers,
 } from '@/hooks'
-import { formatCurrency, formatCompact } from '@/utils/formatters'
+import { formatCurrency } from '@/utils/formatters'
 import { formatRelativeTime } from '@/utils/dateHelpers'
 
 export function Dashboard() {
@@ -38,6 +39,9 @@ export function Dashboard() {
     refetch: refetchCategory,
   } = useCategorySales()
   const { data: activityData } = useActivity(8)
+  const { data: topProducts, isLoading: productsLoading } = useTopProducts(5)
+  const { data: topPerformers, isLoading: performersLoading } =
+    useTopPerformers(5)
 
   const metrics = [
     {
@@ -74,17 +78,6 @@ export function Dashboard() {
     },
   ]
 
-  const formatMetricValue = (value: number, format: string) => {
-    switch (format) {
-      case 'currency':
-        return formatCurrency(value)
-      case 'percentage':
-        return `${value.toFixed(1)}%`
-      default:
-        return formatCompact(value)
-    }
-  }
-
   const pieData =
     categoryData?.map((cat) => ({
       name: cat.category,
@@ -92,81 +85,38 @@ export function Dashboard() {
       color: cat.color,
     })) ?? []
 
-  const barData =
-    categoryData?.map((cat) => ({
-      category: cat.category,
-      orders: cat.orders,
-      revenue: cat.revenue,
+  const ordersData =
+    revenueData?.map((d) => ({
+      label: d.label,
+      orders: d.orders,
+      revenue: d.revenue,
     })) ?? []
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <DashboardHeader
         title="Dashboard"
         subtitle="Welcome back! Here's an overview of your analytics."
       />
 
-      <FilterBar showSearch showCategories />
+      <FilterBar showSearch={false} showCategories />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((metric) => {
-          const isPositive = metric.change >= 0
-
-          return (
-            <div
-              key={metric.title}
-              className={`rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-5 shadow-[var(--shadow-sm)] transition-all hover:shadow-[var(--shadow-md)] ${statsLoading ? 'animate-pulse' : ''}`}
-            >
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-[var(--text-muted)]">
-                  {metric.title}
-                </p>
-                <div
-                  className="flex h-10 w-10 items-center justify-center rounded-lg"
-                  style={{
-                    backgroundColor: `color-mix(in srgb, ${metric.color} 15%, transparent)`,
-                  }}
-                >
-                  <metric.icon size={20} style={{ color: metric.color }} />
-                </div>
-              </div>
-              <p className="mt-3 text-2xl font-bold text-[var(--text-primary)]">
-                {statsLoading
-                  ? '—'
-                  : formatMetricValue(metric.value, metric.format)}
-              </p>
-              <div className="mt-2 flex items-center gap-1">
-                {isPositive ? (
-                  <TrendingUp
-                    size={16}
-                    className="text-[var(--color-success)]"
-                  />
-                ) : (
-                  <TrendingDown
-                    size={16}
-                    className="text-[var(--color-danger)]"
-                  />
-                )}
-                <span
-                  className={`text-sm font-medium ${
-                    isPositive
-                      ? 'text-[var(--color-success)]'
-                      : 'text-[var(--color-danger)]'
-                  }`}
-                >
-                  {isPositive ? '+' : ''}
-                  {metric.change.toFixed(1)}%
-                </span>
-                <span className="text-sm text-[var(--text-muted)]">
-                  vs last month
-                </span>
-              </div>
-            </div>
-          )
-        })}
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {metrics.map((metric) => (
+          <MetricCard
+            key={metric.title}
+            title={metric.title}
+            value={metric.value}
+            change={metric.change}
+            format={metric.format}
+            icon={metric.icon}
+            color={metric.color}
+            isLoading={statsLoading}
+          />
+        ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-2">
         <ChartCard
           title="Revenue Overview"
           subtitle="Daily revenue for the selected period"
@@ -177,7 +127,7 @@ export function Dashboard() {
             data={revenueData ?? []}
             areas={[{ dataKey: 'revenue', name: 'Revenue', color: '#3b82f6' }]}
             xAxisKey="label"
-            height={280}
+            height={320}
             currencyFormat
             showAverage
           />
@@ -191,7 +141,7 @@ export function Dashboard() {
         >
           <InteractivePieChart
             data={pieData}
-            height={320}
+            height={360}
             donut
             currencyFormat
             totalLabel="Total Revenue"
@@ -199,38 +149,38 @@ export function Dashboard() {
         </ChartCard>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 xl:grid-cols-3">
         <div className="lg:col-span-2">
           <ChartCard
-            title="Orders by Category"
-            subtitle="Number of orders per category"
-            isLoading={categoryLoading}
+            title="Orders Trend"
+            subtitle="Orders and revenue over time"
+            isLoading={revenueLoading}
           >
             <InteractiveBarChart
-              data={barData}
+              data={ordersData}
               bars={[{ dataKey: 'orders', name: 'Orders', color: '#22c55e' }]}
-              xAxisKey="category"
-              height={280}
+              xAxisKey="label"
+              height={320}
               highlightOnHover
             />
           </ChartCard>
         </div>
 
         <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] shadow-[var(--shadow-sm)]">
-          <div className="border-b border-[var(--border-color)] px-5 py-4">
+          <div className="border-b border-[var(--border-color)] px-6 py-5">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">
               Recent Activity
             </h3>
-            <p className="mt-0.5 text-sm text-[var(--text-muted)]">
+            <p className="mt-1 text-sm text-[var(--text-muted)]">
               Latest updates and events
             </p>
           </div>
-          <div className="divide-y divide-[var(--border-color)]">
-            {activityData?.slice(0, 6).map((activity) => (
-              <div key={activity.id} className="px-5 py-3">
+          <div className="max-h-[360px] divide-y divide-[var(--border-color)] overflow-y-auto">
+            {activityData?.slice(0, 8).map((activity) => (
+              <div key={activity.id} className="px-6 py-4">
                 <div className="flex items-start gap-3">
                   <div
-                    className={`mt-0.5 h-2 w-2 rounded-full ${
+                    className={`mt-1 h-2 w-2 flex-shrink-0 rounded-full ${
                       activity.type === 'sale'
                         ? 'bg-[var(--color-success)]'
                         : activity.type === 'order'
@@ -240,8 +190,8 @@ export function Dashboard() {
                             : 'bg-[var(--color-danger)]'
                     }`}
                   />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-[var(--text-primary)] truncate">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm text-[var(--text-primary)]">
                       {activity.message}
                     </p>
                     <div className="mt-0.5 flex items-center gap-2 text-xs text-[var(--text-muted)]">
@@ -261,6 +211,17 @@ export function Dashboard() {
             ))}
           </div>
         </div>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-2">
+        <TopProductsTable
+          products={topProducts ?? []}
+          isLoading={productsLoading}
+        />
+        <TopPerformers
+          performers={topPerformers ?? []}
+          isLoading={performersLoading}
+        />
       </div>
     </div>
   )

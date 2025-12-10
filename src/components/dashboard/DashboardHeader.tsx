@@ -36,15 +36,15 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] p-1">
+        <div className="inline-flex gap-1 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] p-1">
           {TIME_FRAMES.map((tf) => (
             <button
               key={tf.value}
               onClick={() => setTimeFrame(tf.value)}
-              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                 timeFrame === tf.value
                   ? 'bg-[var(--color-primary)] text-white'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]'
               }`}
             >
               {tf.label}

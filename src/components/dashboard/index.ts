@@ -1,3 +1,6 @@
 export { DashboardHeader } from './DashboardHeader'
 export { FilterBar } from './FilterBar'
 export { FilterPills } from './FilterPills'
+export { MetricCard } from './MetricCard'
+export { TopProductsTable } from './TopProductsTable'
+export { TopPerformers } from './TopPerformers'

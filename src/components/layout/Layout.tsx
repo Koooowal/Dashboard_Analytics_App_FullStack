@@ -20,8 +20,8 @@ export function Layout() {
           onThemeToggle={toggleTheme}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <div className="mx-auto max-w-7xl animate-fade-in">
+        <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+          <div className="mx-auto max-w-[1600px] animate-fade-in">
             <Outlet />
           </div>
         </main>

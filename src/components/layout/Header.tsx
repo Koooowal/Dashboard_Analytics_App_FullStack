@@ -8,7 +8,7 @@ interface HeaderProps {
 
 export function Header({ onMenuClick, theme, onThemeToggle }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border-color)] bg-[var(--bg-primary)] px-4 shadow-[var(--shadow-sm)] transition-theme lg:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border-color)] bg-[var(--bg-primary)] px-6 shadow-[var(--shadow-sm)] transition-theme">
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}

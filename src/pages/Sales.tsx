@@ -68,7 +68,7 @@ export function Sales() {
         subtitle="Track and manage your sales performance."
       />
 
-      <FilterBar showSearch showCategories />
+      <FilterBar showSearch={false} showCategories />
 
       <div className="grid gap-4 sm:grid-cols-3">
         {metrics.map((metric) => {
