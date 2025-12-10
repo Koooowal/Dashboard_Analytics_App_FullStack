@@ -1,0 +1,67 @@
+import { RefreshCw } from 'lucide-react'
+import { DateRangePicker } from '@/components/ui'
+import { useFilterStore } from '@/store'
+import { useQueryClient } from '@tanstack/react-query'
+import type { TimeFrame } from '@/types'
+
+const TIME_FRAMES: { value: TimeFrame; label: string }[] = [
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'yearly', label: 'Yearly' },
+]
+
+interface DashboardHeaderProps {
+  title: string
+  subtitle?: string
+}
+
+export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
+  const { dateRange, setDateRange, timeFrame, setTimeFrame } = useFilterStore()
+  const queryClient = useQueryClient()
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries()
+  }
+
+  return (
+    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          {title}
+        </h1>
+        {subtitle && (
+          <p className="mt-1 text-sm text-[var(--text-muted)]">{subtitle}</p>
+        )}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] p-1">
+          {TIME_FRAMES.map((tf) => (
+            <button
+              key={tf.value}
+              onClick={() => setTimeFrame(tf.value)}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                timeFrame === tf.value
+                  ? 'bg-[var(--color-primary)] text-white'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              {tf.label}
+            </button>
+          ))}
+        </div>
+
+        <DateRangePicker value={dateRange} onChange={setDateRange} />
+
+        <button
+          onClick={handleRefresh}
+          className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] p-2.5 text-[var(--text-muted)] transition-colors hover:border-[var(--border-color-hover)] hover:text-[var(--text-primary)]"
+          title="Refresh data"
+        >
+          <RefreshCw size={16} />
+        </button>
+      </div>
+    </div>
+  )
+}

@@ -12,6 +12,7 @@ import {
   InteractivePieChart,
   InteractiveBarChart,
 } from '@/components/charts'
+import { DashboardHeader } from '@/components/dashboard'
 import {
   useDashboardStats,
   useRevenueData,
@@ -97,14 +98,10 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-          Dashboard
-        </h1>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">
-          Welcome back! Here&apos;s an overview of your analytics.
-        </p>
-      </div>
+      <DashboardHeader
+        title="Dashboard"
+        subtitle="Welcome back! Here's an overview of your analytics."
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {metrics.map((metric) => {
