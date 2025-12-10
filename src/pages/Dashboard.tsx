@@ -12,17 +12,20 @@ import {
   InteractivePieChart,
   InteractiveBarChart,
 } from '@/components/charts'
-import { DashboardHeader } from '@/components/dashboard'
+import { DashboardHeader, FilterBar } from '@/components/dashboard'
 import {
   useDashboardStats,
   useRevenueData,
   useCategorySales,
   useActivity,
+  useFilterSync,
 } from '@/hooks'
 import { formatCurrency, formatCompact } from '@/utils/formatters'
 import { formatRelativeTime } from '@/utils/dateHelpers'
 
 export function Dashboard() {
+  useFilterSync()
+
   const { data: stats, isLoading: statsLoading } = useDashboardStats()
   const {
     data: revenueData,
@@ -102,6 +105,8 @@ export function Dashboard() {
         title="Dashboard"
         subtitle="Welcome back! Here's an overview of your analytics."
       />
+
+      <FilterBar showSearch showCategories />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {metrics.map((metric) => {

@@ -1,29 +1,95 @@
-import { BarChart3 } from 'lucide-react'
+import { DashboardHeader, FilterBar } from '@/components/dashboard'
+import {
+  ChartCard,
+  InteractiveAreaChart,
+  InteractiveBarChart,
+} from '@/components/charts'
+import {
+  useRevenueData,
+  useCategorySales,
+  useSalesByHour,
+  useFilterSync,
+} from '@/hooks'
 
 export function Analytics() {
+  useFilterSync()
+
+  const { data: revenueData, isLoading: revenueLoading } = useRevenueData()
+  const { data: categoryData, isLoading: categoryLoading } = useCategorySales()
+  const { data: hourlyData, isLoading: hourlyLoading } = useSalesByHour()
+
+  const hourlyChartData =
+    hourlyData?.map((h) => ({
+      hour: h.label,
+      revenue: h.revenue,
+      orders: h.orders,
+    })) ?? []
+
+  const categoryBarData =
+    categoryData?.map((c) => ({
+      category: c.category,
+      revenue: c.revenue,
+      orders: c.orders,
+    })) ?? []
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-          Analytics
-        </h1>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">
-          Detailed analytics and insights for your business.
-        </p>
+      <DashboardHeader
+        title="Analytics"
+        subtitle="Detailed analytics and insights for your business."
+      />
+
+      <FilterBar showSearch showCategories />
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ChartCard
+          title="Revenue Trend"
+          subtitle="Revenue over the selected period"
+          isLoading={revenueLoading}
+        >
+          <InteractiveAreaChart
+            data={revenueData ?? []}
+            areas={[{ dataKey: 'revenue', name: 'Revenue', color: '#3b82f6' }]}
+            xAxisKey="label"
+            height={280}
+            currencyFormat
+            showAverage
+          />
+        </ChartCard>
+
+        <ChartCard
+          title="Revenue by Category"
+          subtitle="Compare revenue across categories"
+          isLoading={categoryLoading}
+        >
+          <InteractiveBarChart
+            data={categoryBarData}
+            bars={[{ dataKey: 'revenue', name: 'Revenue', color: '#22c55e' }]}
+            xAxisKey="category"
+            height={280}
+            currencyFormat
+            highlightOnHover
+          />
+        </ChartCard>
       </div>
 
-      <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-dashed border-[var(--border-color)] bg-[var(--bg-primary)] p-8">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-primary)]/10">
-          <BarChart3 size={32} className="text-[var(--color-primary)]" />
-        </div>
-        <h2 className="mt-4 text-lg font-semibold text-[var(--text-primary)]">
-          Analytics Dashboard
-        </h2>
-        <p className="mt-2 max-w-md text-center text-sm text-[var(--text-muted)]">
-          Advanced analytics with interactive charts, filters, and data export
-          capabilities will be available here.
-        </p>
-      </div>
+      <ChartCard
+        title="Hourly Sales Distribution"
+        subtitle="Sales patterns throughout the day"
+        isLoading={hourlyLoading}
+        className="w-full"
+      >
+        <InteractiveBarChart
+          data={hourlyChartData}
+          bars={[
+            { dataKey: 'revenue', name: 'Revenue', color: '#8b5cf6' },
+            { dataKey: 'orders', name: 'Orders', color: '#06b6d4' },
+          ]}
+          xAxisKey="hour"
+          height={300}
+          highlightOnHover
+        />
+      </ChartCard>
     </div>
   )
 }

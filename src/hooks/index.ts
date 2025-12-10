@@ -1,4 +1,5 @@
 export { useTheme } from './useTheme'
+export { useFilterSync } from './useFilterSync'
 export {
   useDashboardStats,
   useRevenueData,
